@@ -50,8 +50,9 @@ const Content = (props) => {
 
 const Total = (props) => {
 	console.log(props)
-	var total = 0
-	props.parts.map(part => total += part.exercises)
+	var initialValue = 0
+	const total = 
+  		props.parts.reduce((s, p) => s + p.exercises, initialValue)
 	return (<div>
 		<p>Total of {total} exercises </p>
 	</div>

@@ -56,36 +56,51 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addNumber}>
+      <h3>Add a new</h3>
+      <PersonForm addNumber={addNumber} newName={newName} handleNameChange = {handleNameChange}
+        newNumber={newNumber} handleNumberChange={handleNumberChange}
+        />
+      <h2>Numbers</h2>
+      <Filter newFilter={newFilter} handleFilter={handleFilter}/>
+      <Persons filterPersons={filterPersons}/>
+    </div>
+  )
+}
+const Filter = (props) => {
+  return (<form>
+    <div>
+      filter shown with: <input value={props.newFilter}
+      onChange={props.handleFilter}/>
+    </div>
+  </form>)
+}
+
+const PersonForm = (props) => {
+  return (
+    <form onSubmit={props.addNumber}>
         <div>
-          name: <input value={newName}
-          onChange={handleNameChange}/>
+          name: <input value={props.newName}
+          onChange={props.handleNameChange}/>
         </div>
         <div>
-          number: <input value={newNumber}
-          onChange={handleNumberChange}/>
+          number: <input value={props.newNumber}
+          onChange={props.handleNumberChange}/>
         </div>
         <div>
           <button type="submit">add</button>
         </div>
-      </form>
-      <h2>Numbers</h2>
-      <form>
-        <div>
-          filter shown with: <input value={newFilter}
-          onChange={handleFilter}/>
-        </div>
-      </form>
-      <ul>
-        {filterPersons.map(person => 
-          <Number key={person.name} name={person.name} 
-            number={person.number}/>
-        )}
-      </ul>
-    </div>
+    </form>
   )
 }
 
+const Persons = (props) => {
+  return (<ul>
+    {props.filterPersons.map(person => 
+      <Number key={person.name} name={person.name} 
+        number={person.number}/>
+    )}
+  </ul>)
+}
 const Number = (props) => {
   return (
     <div>

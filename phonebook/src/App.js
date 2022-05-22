@@ -59,12 +59,27 @@ const App = () => {
         person.name.toUpperCase().includes(
           filter.toUpperCase()))
       setNewFilterPersons(filtered)
-      console.log("filtered", filtered)
     } else {
       setNewFilterPersons(persons)
       setNewFilter('')
     }
     
+  }
+
+  const deleteEntry = (event) => {
+    const selectedIndex = event.target.getAttribute('indexkey')
+    const personToDelete = persons.find(person => person.id === parseInt(selectedIndex,10))
+    const personName = personToDelete.name
+    if (window.confirm(`Delete ${personName}?`)) {
+      const remainingPersons = persons.filter(person => person.id !== selectedIndex)
+      dbService.deletePerson(selectedIndex).then(() => {
+        setPersons(remainingPersons)
+        const filtered = remainingPersons.filter(person => 
+          person.name.toUpperCase().includes(
+            newFilter.toUpperCase()))
+        setNewFilterPersons(filtered)
+      })
+    }   
   }
 
   return (
@@ -76,7 +91,7 @@ const App = () => {
         />
       <h2>Numbers</h2>
       <Filter newFilter={newFilter} handleFilter={handleFilter}/>
-      <Persons filterPersons={filterPersons}/>
+      <Persons filterPersons={filterPersons} deleteEntry={deleteEntry}/>
     </div>
   )
 }
@@ -109,17 +124,24 @@ const PersonForm = (props) => {
 
 const Persons = (props) => {
   return (<ul>
-    {props.filterPersons.map(person => 
-      <Number key={person.name} name={person.name} 
-        number={person.number}/>
+    { props.filterPersons.map(person => 
+      <li>  
+          <Number name={person.name} number={person.number} onSubmit={props.deleteEntry} index={person.id}/> 
+       
+      </li>
     )}
   </ul>)
 }
+
 const Number = (props) => {
   return (
     <div>
-      <li>{props.name} {props.number}</li>
+    <form onSubmit={props.onSubmit} value={props.key} indexkey={props.index}>
+      {props.name} {props.number}
+      <input type="submit" value="Delete"/>
+      </form>
     </div>
   )
 }
+
 export default App

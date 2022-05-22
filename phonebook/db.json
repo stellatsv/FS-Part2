@@ -21,39 +21,9 @@
       "id": 4
     },
     {
-      "name": "t",
-      "number": "2",
-      "id": 5
-    },
-    {
-      "name": "a",
-      "number": "1",
-      "id": 6
-    },
-    {
-      "name": "w",
-      "number": "2",
-      "id": 7
-    },
-    {
       "name": "r",
       "number": "2",
-      "id": 8
-    },
-    {
-      "name": "f",
-      "number": "2",
-      "id": 9
-    },
-    {
-      "name": "g",
-      "number": "1",
-      "id": 10
-    },
-    {
-      "name": "b",
-      "number": "2",
-      "id": 11
+      "id": 5
     }
   ]
 }

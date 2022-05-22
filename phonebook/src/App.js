@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import dbService from './dbService.js'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -9,14 +9,13 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('')
   const [filterPersons, setNewFilterPersons] = useState(persons)
 
-  const hook = () => {    
-    console.log('effect')    
-    axios.get('http://localhost:3001/persons').then(response => {        
-      console.log('promise fulfilled')        
-      setPersons(response.data)   
-      setNewFilterPersons(response.data)   
-    }) 
+  const hook = () => {       
+    dbService.getAll().then(returnedPersons => {    
+      setPersons(returnedPersons)   
+      setNewFilterPersons(returnedPersons) 
+    })
   }
+
   useEffect(hook, [])
   console.log('render', persons.length, 'persons')
 
@@ -27,19 +26,17 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)      
     } else {
       event.preventDefault()
-      const newEntry = {name: newName, number: newNumber}
-      axios
-        .post('http://localhost:3001/persons', newEntry)
-          .then(response => {
-            setPersons(persons.concat(response.data))  
-            const filtered = (persons.concat(response.data)).filter(person => 
-              person.name.toUpperCase().includes(
-                newFilter.toUpperCase()))
-            console.log("filtered", filtered)
-            setNewFilterPersons(filtered)
-            setNewName('')
-            setNewNumber('')
-          })
+      var newEntry = {name: newName, number: newNumber}
+      dbService.create(newEntry).then(newPerson => {
+        setPersons(persons.concat(newPerson))  
+        const filtered = (persons.concat(newPerson)).filter(person => 
+          person.name.toUpperCase().includes(
+            newFilter.toUpperCase()))
+        console.log("filtered", filtered)
+        setNewFilterPersons(filtered)
+        setNewName('')
+        setNewNumber('')
+      })              
     }
   }
 
@@ -55,13 +52,14 @@ const App = () => {
 
   const handleFilter = (event) => {
     if (event.target.value !== '') {
-      console.log(event.target.value)
-      setNewFilter(event.target.value)
-
+      var filter = event.target.value
+      console.log(filter)
+      setNewFilter(filter)
       const filtered = persons.filter(person => 
         person.name.toUpperCase().includes(
-          newFilter.toUpperCase()))
+          filter.toUpperCase()))
       setNewFilterPersons(filtered)
+      console.log("filtered", filtered)
     } else {
       setNewFilterPersons(persons)
       setNewFilter('')

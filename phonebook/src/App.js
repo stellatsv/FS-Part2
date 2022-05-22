@@ -28,9 +28,18 @@ const App = () => {
     } else {
       event.preventDefault()
       const newEntry = {name: newName, number: newNumber}
-      setPersons(persons.concat(newEntry))
-      setNewName('')
-      setNewNumber('')
+      axios
+        .post('http://localhost:3001/persons', newEntry)
+          .then(response => {
+            setPersons(persons.concat(response.data))  
+            const filtered = (persons.concat(response.data)).filter(person => 
+              person.name.toUpperCase().includes(
+                newFilter.toUpperCase()))
+            console.log("filtered", filtered)
+            setNewFilterPersons(filtered)
+            setNewName('')
+            setNewNumber('')
+          })
     }
   }
 

@@ -6,19 +6,22 @@ function App() {
   const [countries, setCounries] = useState([])
   const [filterCountries, setNewFilterCountries] = useState(countries)
   const [newFilter, setNewFilter] = useState('')
+  const [showCountry, setShowCountry] = useState(null)
 
   const hook = () => {    
     axios.get(url).then(response => {
       const allCountries = response.data
       console.log(allCountries)   
       setCounries(allCountries)
-      setNewFilterCountries('')
+      setNewFilterCountries([])
+      setShowCountry('')
     })
   }
 
   useEffect(hook, [])
 
   const handleFilter = (event) => {
+    event.preventDefault()
     if (event.target.value !== '') {
       var filter = event.target.value
       console.log(filter)
@@ -30,14 +33,21 @@ function App() {
     } else {
       setNewFilterCountries(countries)
       setNewFilter('')
+      setShowCountry('')
     }
     
+  }
+
+  const showCountryOnPage = (event) => {
+    event.preventDefault()
+    setShowCountry(event.target.getAttribute('country'))
   }
 
   return (
     <div>
     <Filter newFilter={newFilter} handleFilter={handleFilter}/>
-    <Countries filterCountries={filterCountries}/>
+    <Countries filterCountries={filterCountries} showCountryOnPage={showCountryOnPage}
+      showCountry={showCountry}/>
     </div>
   );
 }
@@ -57,37 +67,47 @@ const Countries = (props) => {
     return <p>Too many matches, specify another filter </p>
   } else if (props.filterCountries.length<=10 && props.filterCountries.length>2) {
     return (
-      <ul>
-        {props.filterCountries.map(country => 
-        <li>
-            <p>{country.name.common}</p>
-        </li>
-      )}
-      </ul>
+      <div>
+        <ul>
+          {props.filterCountries.map(country => 
+          <li>
+            <form onSubmit={props.showCountryOnPage} country={country.name.common}>
+              <p>{country.name.common}</p>
+              <input type="submit" value="Show"/>
+            </form>
+          </li>
+        )}
+        </ul>
+        <Country countryName={props.showCountry} filterCountries={props.filterCountries}/>
+      </div>
     )
   } else if (props.filterCountries.length === 1) {
-    return <Country country={props.filterCountries[0]}/> 
+    return <Country countryName={props.filterCountries[0].name.common} filterCountries={props.filterCountries}/> 
   }
+
+ 
 }
 
-const Country = ({country}) => {
-  console.log(country.languages)
-  return (
-    <div>
-      <h1> {country.name.common} </h1>
-        <p>Capital {country.capital}</p>
-        <p>Area {country.area}</p>
-      <h2>Languages: </h2>
-
-        <ul>
-          {Object.keys(country.languages).map(index => 
-            <li>
-                <p>{country.languages[index]}</p>
-            </li>
-          )}
-        </ul>
-        <p>{country.flag}</p>
-    </div>
-  )
+const Country = (props) => {
+  const countryName = props.countryName
+  if (countryName !== '') {     
+    const country = props.filterCountries.find(country => countryName===country.name.common)
+    return (
+      <div>
+        <h1> {country.name.common} </h1>
+          <p>Capital {country.capital}</p>
+          <p>Area {country.area}</p>
+        <h2>Languages: </h2>
+          <ul>
+            {Object.keys(country.languages).map(index => 
+              <li>
+                  <p>{country.languages[index]}</p>
+              </li>
+            )}
+          </ul>
+          <p>{country.flag}</p>
+      </div>
+    )
+  }
 }
 export default App;

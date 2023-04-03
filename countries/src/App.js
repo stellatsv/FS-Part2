@@ -52,6 +52,43 @@ function App() {
   );
 }
 
+const Weather = (props) => {
+  const [city, setCity] = useState('')
+  const [country, setCountry] = useState('')
+  const [temperature, setTemperature] = useState('')
+  const [wind, setWind] = useState('')
+  const [icon, setIcon] = useState('')
+  const [iconDescription, setIconDescription] = useState('')
+ 
+  const hook = () => {
+    const api_key = process.env.REACT_APP_API_KEY
+    const url = 'https://api.openweathermap.org/data/2.5/weather?q=' + props.city + '&appid=' + api_key + '&units=metric'
+    axios.get(url).then(response => {
+      const weatherData = response.data
+      console.log(weatherData)
+      setCity(weatherData.name)
+      setCountry(weatherData.sys.country)
+      setTemperature(weatherData.main.temp)
+      setWind(weatherData.wind.speed)
+      setIcon(weatherData.weather[0].icon)
+      setIconDescription(weatherData.weather[0].description)
+    })
+  }
+  useEffect(hook, [])
+
+  return (
+    <div>
+      <h2>Weather in {city}, {country}</h2>
+      <p><b>temperature:</b> {temperature} Celsius</p>
+
+      <img src={'http://openweathermap.org/img/w/' + icon + '.png'} alt={iconDescription}/>
+
+      <p><b>wind:</b> {wind} m/s </p>
+    </div>
+  )
+
+}
+
 
 const Filter = (props) => {
   return (<form>
@@ -106,6 +143,7 @@ const Country = (props) => {
             )}
           </ul>
           <p>{country.flag}</p>
+          <Weather city={country.capital[0]}/>
       </div>
     )
   }
